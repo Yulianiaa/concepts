@@ -1,0 +1,180 @@
+@font-face {
+  font-family: 'Medeo Sans';
+  src: url('fonts/MedeoSans-Variable.ttf') format('truetype');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --bg: #141414;
+  --text: #f5f5f5;
+  --muted: #999999;
+  --muted-glass: rgba(245, 245, 245, 0.5);
+  --cell: rgba(255, 255, 255, 0.08);
+  --primary: #f5f5f5;
+  --primary-text: #141414;
+  --disabled: #232323;
+  --disabled-text: #7b7b7b;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  min-height: 100%;
+  background: #0a0a0a;
+  color: var(--text);
+  font-family: 'Medeo Sans', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+button { font: inherit; color: inherit; }
+
+.stage {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.phone {
+  position: relative;
+  width: 402px;
+  height: 874px;
+  flex-shrink: 0;
+  overflow: hidden;
+  border-radius: 54px;
+  background: var(--bg);
+  transform-origin: center center;
+  box-shadow: 0 0 0 10px #1c1c1e, 0 30px 80px rgba(0, 0, 0, 0.6);
+}
+
+/* ---------- Фон экрана ввода ---------- */
+.input-bg { position: absolute; inset: 0; display: none; }
+.ribbons, .grain { position: absolute; left: 0; top: 0; }
+.frost {
+  position: absolute; inset: 0;
+  background: rgba(255, 255, 255, 0.015);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+}
+.quiet {
+  position: absolute; left: -64px; top: 160px; width: 530px; height: 380px;
+  background: radial-gradient(closest-side, rgba(20, 20, 20, 0.7), rgba(20, 20, 20, 0));
+}
+.grain { opacity: 0.34; mix-blend-mode: overlay; }
+.cover { position: absolute; inset: 0; background: var(--bg); opacity: 0; }
+
+/* ---------- Статус-бар ---------- */
+.statusbar { position: absolute; left: 0; top: 0; width: 402px; height: 62px; z-index: 5; pointer-events: none; }
+.island { position: absolute; left: 138.5px; top: 11px; width: 125px; height: 37px; border-radius: 20px; background: #000; }
+.sb-time {
+  position: absolute; left: 24px; top: 21px; width: 100px; text-align: center;
+  font-family: -apple-system, 'SF Pro Text', system-ui, sans-serif;
+  font-size: 17px; font-weight: 600; line-height: 22px; letter-spacing: -0.4px;
+}
+.sb-icons {
+  position: absolute; left: 278px; top: 21px; width: 100px; height: 22px;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+}
+
+/* ---------- Общие экраны ---------- */
+.screen { position: absolute; inset: 0; display: none; }
+.screen.visible { display: block; }
+
+.primary {
+  position: absolute; left: 16px; right: 16px; top: 776px; height: 56px;
+  border: none; border-radius: 20px;
+  background: var(--primary); color: var(--primary-text);
+  font-size: 18px; line-height: 24px; font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.primary:disabled { background: var(--disabled); color: var(--disabled-text); cursor: default; }
+
+/* ---------- Список ---------- */
+.list .nav { position: absolute; left: 0; top: 62px; width: 402px; height: 56px; }
+.icon-btn {
+  position: absolute; top: 8px; width: 40px; height: 40px; padding: 0;
+  border: none; background: transparent; display: flex; align-items: center; justify-content: center;
+}
+.icon-btn.left { left: 4px; } /* иконка 24 в кнопке 40 → 12px от края */
+.icon-btn.right { right: 12px; }
+
+.list-head { position: absolute; left: 0; top: 122px; width: 402px; padding: 0 16px; display: flex; flex-direction: column; gap: 2px; }
+.list-head h1 { margin: 0; font-size: 28px; line-height: 32px; font-weight: 500; }
+.list-head p { margin: 0; font-size: 16px; line-height: 24px; color: var(--muted); }
+
+.groups { position: absolute; left: 16px; right: 16px; top: 212px; display: flex; flex-direction: column; gap: 32px; }
+.group { display: flex; flex-direction: column; gap: 12px; }
+.group h2 { margin: 0; font-size: 18px; line-height: 24px; font-weight: 500; }
+.rows { display: flex; flex-direction: column; gap: 8px; }
+
+.cell, .card { border-radius: 20px; background: var(--cell); }
+.cell {
+  width: 100%; padding: 16px; border: none; text-align: left; cursor: pointer;
+  display: flex; align-items: center; gap: 8px;
+}
+.card { padding: 16px; display: flex; flex-direction: column; gap: 16px; }
+.row { display: flex; align-items: center; gap: 8px; }
+.divider { height: 1px; background: var(--cell); }
+.ico { padding: 2px; display: flex; }
+.label { flex: 1 0 0; font-size: 16px; line-height: 24px; font-weight: 400; }
+.value { font-size: 16px; line-height: 24px; color: var(--muted); }
+.value:empty { display: none; }
+.chev { display: flex; }
+
+/* ---------- Ввод ---------- */
+.input .nav { position: absolute; left: 0; top: 62px; width: 402px; height: 56px; }
+.glass-btn {
+  position: absolute; top: 4px; width: 48px; height: 48px; padding: 0;
+  border: none; border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  display: flex; align-items: center; justify-content: center; cursor: pointer;
+}
+.glass-btn.left { left: 16px; }
+.glass-btn.right { right: 16px; }
+.nav-title {
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+  padding: 6px 12px; display: flex; flex-direction: column; align-items: center; white-space: nowrap;
+  font-size: 16px; line-height: 24px; font-weight: 500;
+}
+.meter-no { font-size: 14px; line-height: 20px; font-weight: 400; color: var(--muted); }
+.meter-no b { font-weight: 500; color: var(--text); }
+
+.reading {
+  position: absolute; left: 50%; top: 227px; width: 320px; transform: translateX(-50%);
+  display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center;
+}
+.reading-label { font-size: 16px; line-height: 24px; }
+.reading-value { display: flex; align-items: flex-end; gap: 8px; }
+.num { font-size: 96px; line-height: 96px; font-weight: 400; letter-spacing: -0.02em; color: var(--text); }
+.num.empty { color: var(--muted-glass); }
+.caret { width: 3px; height: 72px; margin: 0 0 12px -4px; border-radius: 2px; background: var(--text); }
+.unit { font-size: 24px; line-height: 32px; padding-bottom: 6px; }
+.support { font-size: 16px; line-height: 24px; color: var(--muted-glass); min-height: 24px; }
+
+.keyboard {
+  position: absolute; left: 16px; right: 16px; top: 496px;
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px;
+}
+.key {
+  height: 56px; padding: 0; border: none; border-radius: 20px;
+  background: rgba(255, 255, 255, 0.04);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  font-size: 24px; line-height: 32px; font-weight: 500;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: background 0.12s;
+  -webkit-tap-highlight-color: transparent;
+}
+.key:active { background: rgba(255, 255, 255, 0.14); }
+
+:focus-visible { outline: 2px solid rgba(245, 245, 245, 0.7); outline-offset: 2px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .key, .primary { transition: none; }
+}

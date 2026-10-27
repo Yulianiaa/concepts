@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Показания счётчиков — концепт</title>
+<meta name="description" content="Визуальный концепт экрана передачи показаний счётчиков: живые ленты света, которые затихают во время ввода.">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<main class="stage">
+  <div class="phone" id="phone" aria-label="Прототип приложения">
+
+    <!-- Фон экрана ввода: ленты света под матовым стеклом -->
+    <div class="input-bg" id="inputBg" aria-hidden="true">
+      <svg class="ribbons" width="402" height="874" viewBox="0 0 402 874">
+        <defs>
+          <filter id="ribSoft" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="50"/></filter>
+          <filter id="ribEdge" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="30"/></filter>
+          <clipPath id="ribClip0"><path id="clip0"/></clipPath>
+          <clipPath id="ribClip1"><path id="clip1"/></clipPath>
+          <clipPath id="ribClip2"><path id="clip2"/></clipPath>
+        </defs>
+        <g clip-path="url(#ribClip0)" id="grp0"><path id="deep0" filter="url(#ribSoft)"/><path id="bright0" filter="url(#ribEdge)"/></g>
+        <g clip-path="url(#ribClip1)" id="grp1"><path id="deep1" filter="url(#ribSoft)"/><path id="bright1" filter="url(#ribEdge)"/></g>
+        <g clip-path="url(#ribClip2)" id="grp2"><path id="deep2" filter="url(#ribSoft)"/><path id="bright2" filter="url(#ribEdge)"/></g>
+      </svg>
+      <div class="frost"></div>
+      <div class="quiet"></div>
+      <svg class="grain" width="402" height="874">
+        <filter id="grainF"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter>
+        <rect width="402" height="874" filter="url(#grainF)"/>
+      </svg>
+      <div class="cover" id="cover"></div>
+    </div>
+
+    <!-- Статус-бар iOS -->
+    <div class="statusbar" aria-hidden="true">
+      <div class="island"></div>
+      <span class="sb-time">20:00</span>
+      <span class="sb-icons">
+        <svg width="18" height="12" viewBox="0 0 18 12" fill="#f5f5f5"><rect x="0" y="7.4" width="3.2" height="4.6" rx="1"/><rect x="4.9" y="5" width="3.2" height="7" rx="1"/><rect x="9.8" y="2.5" width="3.2" height="9.5" rx="1"/><rect x="14.7" y="0" width="3.2" height="12" rx="1"/></svg>
+        <svg width="17" height="12" viewBox="0 0 17 12" fill="#f5f5f5"><path d="M8.5 11.6L6.17 9.27A3.3 3.3 0 0 1 10.83 9.27Z"/><path d="M3.27 6.37A7.4 7.4 0 0 1 13.73 6.37L12.04 8.06A5.0 5.0 0 0 0 4.96 8.06Z"/><path d="M0.37 3.47A11.5 11.5 0 0 1 16.63 3.47L14.93 5.17A9.1 9.1 0 0 0 2.07 5.17Z"/></svg>
+        <svg width="27" height="13" viewBox="0 0 27 13" fill="none"><rect x="0.5" y="0.5" width="24" height="12" rx="3.6" stroke="rgba(245,245,245,0.35)"/><rect x="2" y="2" width="21" height="9" rx="2.2" fill="#f5f5f5"/><path d="M25.8 4.4v4.2a2.2 2.2 0 0 0 0-4.2z" fill="rgba(245,245,245,0.4)"/></svg>
+      </span>
+    </div>
+
+    <!-- Экран списка -->
+    <section class="screen list" id="listScreen" aria-label="Список счётчиков">
+      <div class="nav">
+        <button class="icon-btn left" type="button" aria-label="Назад">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M15 19L8 12L15 5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke="#F5F5F5"/></svg>
+        </button>
+        <button class="icon-btn right" type="button" aria-label="Как передавать показания">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 22C17.51 22 22 17.51 22 12C22 6.49 17.51 2 12 2C6.49 2 2 6.49 2 12C2 17.51 6.49 22 12 22ZM11 7H13V9H11V7ZM11 11H13V17H11V11Z" fill="#F5F5F5"/></svg>
+        </button>
+      </div>
+      <header class="list-head">
+        <h1>Показания за ноябрь</h1>
+        <p>Передайте показания до 20 ноября</p>
+      </header>
+
+      <div class="groups">
+        <div class="group">
+          <h2>Вода</h2>
+          <div class="rows">
+            <button class="cell" type="button" id="rowCold">
+              <span class="ico"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10.431 1.21351L10.4318 1.21518L10.436 1.21851L10.451 1.23351L10.5093 1.28934L10.726 1.50101C11.8146 2.57668 12.8465 3.70821 13.8177 4.89101C14.6627 5.92434 15.5202 7.09101 16.1702 8.24434C16.8102 9.38101 17.2918 10.5818 17.2918 11.6668C17.2918 13.6007 16.5236 15.4554 15.1561 16.8228C13.7887 18.1903 11.934 18.9585 10.0002 18.9585C8.06629 18.9585 6.21163 18.1903 4.84418 16.8228C3.47672 15.4554 2.7085 13.6007 2.7085 11.6668C2.7085 10.5818 3.19016 9.38101 3.83016 8.24434C4.48016 7.09101 5.3385 5.92518 6.18266 4.89101C7.21807 3.63027 8.32255 2.42788 9.491 1.28934L9.54933 1.23351L9.56433 1.21851L9.57016 1.21351L10.0002 0.805176L10.431 1.21351ZM10.6252 8.33351C10.6252 8.16775 10.5593 8.00878 10.4421 7.89157C10.3249 7.77436 10.1659 7.70851 10.0002 7.70851C9.8344 7.70851 9.67543 7.77436 9.55822 7.89157C9.44101 8.00878 9.37516 8.16775 9.37516 8.33351V10.1618L7.81516 9.25184C7.74425 9.21048 7.66588 9.18348 7.58454 9.1724C7.50319 9.16132 7.42046 9.16637 7.34106 9.18727C7.26167 9.20816 7.18717 9.24449 7.12181 9.29417C7.05646 9.34386 7.00153 9.40593 6.96016 9.47684C6.87662 9.62006 6.85339 9.7906 6.89559 9.95094C6.93778 10.1113 7.04195 10.2483 7.18516 10.3318L8.76016 11.2502L7.18516 12.1685C7.11425 12.2099 7.05218 12.2648 7.00249 12.3302C6.95281 12.3955 6.91648 12.47 6.89559 12.5494C6.87469 12.6288 6.86964 12.7115 6.88072 12.7929C6.8918 12.8742 6.9188 12.9526 6.96016 13.0235C7.00153 13.0944 7.05646 13.1565 7.12181 13.2062C7.18717 13.2559 7.26167 13.2922 7.34106 13.3131C7.42046 13.334 7.50319 13.339 7.58454 13.3279C7.66588 13.3169 7.74425 13.2899 7.81516 13.2485L9.37516 12.3385V14.1668C9.37516 14.3326 9.44101 14.4916 9.55822 14.6088C9.67543 14.726 9.8344 14.7918 10.0002 14.7918C10.1659 14.7918 10.3249 14.726 10.4421 14.6088C10.5593 14.4916 10.6252 14.3326 10.6252 14.1668V12.3385L12.1852 13.2485C12.3284 13.3321 12.4989 13.3553 12.6593 13.3131C12.8196 13.2709 12.9566 13.1667 13.0402 13.0235C13.1237 12.8803 13.1469 12.7098 13.1047 12.5494C13.0625 12.3891 12.9584 12.2521 12.8152 12.1685L11.2402 11.2502L12.8152 10.3318C12.9584 10.2483 13.0625 10.1113 13.1047 9.95094C13.1469 9.7906 13.1237 9.62006 13.0402 9.47684C12.9566 9.33363 12.8196 9.22946 12.6593 9.18727C12.4989 9.14507 12.3284 9.1683 12.1852 9.25184L10.6252 10.1618V8.33351Z" fill-rule="evenodd" clip-rule="evenodd" fill="#F5F5F5"/></svg></span>
+              <span class="label">Холодная вода</span>
+              <span class="value" id="valCold"></span>
+              <span class="chev"><svg width="10" height="24" viewBox="-2 -6 10 24" fill="none"><path d="M0.530273 0.530273L6.53027 6.53027L0.530273 12.5303" stroke-width="1.5" stroke-linejoin="round" stroke="#999999"/></svg></span>
+            </button>
+            <button class="cell" type="button" id="rowHot">
+              <span class="ico"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10.431 1.21351L10.4318 1.21518L10.436 1.21851L10.451 1.23351L10.5093 1.28934L10.726 1.50101C11.8146 2.57668 12.8465 3.70821 13.8177 4.89101C14.6627 5.92434 15.5202 7.09101 16.1702 8.24434C16.8102 9.38101 17.2918 10.5818 17.2918 11.6668C17.2918 13.6007 16.5236 15.4554 15.1561 16.8228C13.7887 18.1903 11.934 18.9585 10.0002 18.9585C8.06629 18.9585 6.21163 18.1903 4.84418 16.8228C3.47672 15.4554 2.7085 13.6007 2.7085 11.6668C2.7085 10.5818 3.19016 9.38101 3.83016 8.24434C4.48016 7.09101 5.3385 5.92518 6.18266 4.89101C7.21807 3.63027 8.32255 2.42788 9.491 1.28934L9.54933 1.23351L9.56433 1.21851L9.57016 1.21351L10.0002 0.805176L10.431 1.21351Z" fill-rule="evenodd" clip-rule="evenodd" fill="#F5F5F5"/><path d="M12.7453 10.6206C12.5799 10.2299 12.3393 9.87924 12.0388 9.59053L11.7908 9.35179C11.7824 9.34391 11.7722 9.33832 11.7613 9.3355C11.7503 9.33269 11.7388 9.33274 11.7279 9.33565C11.717 9.33856 11.7069 9.34425 11.6985 9.35221C11.6902 9.36017 11.6838 9.37016 11.68 9.3813L11.5692 9.71482C11.5002 9.92405 11.3732 10.1378 11.1933 10.3479C11.1814 10.3613 11.1678 10.3649 11.1584 10.3658C11.149 10.3667 11.1345 10.3649 11.1217 10.3524C11.1098 10.3416 11.1039 10.3255 11.1047 10.3094C11.1362 9.77115 10.9828 9.16402 10.647 8.50324C10.3692 7.95423 9.98311 7.52593 9.50073 7.22728L9.14874 7.01C9.10272 6.98139 9.04391 7.01894 9.04647 7.07527L9.06522 7.50447C9.078 7.79775 9.04562 8.05706 8.96891 8.27255C8.87516 8.53632 8.7405 8.78132 8.56834 9.00129C8.44853 9.15416 8.31274 9.29242 8.16351 9.41349C7.80412 9.70335 7.51188 10.0747 7.30868 10.4999C7.10599 10.9287 7.00041 11.4009 7.00016 11.8796C7.00016 12.3016 7.07942 12.7102 7.23624 13.0956C7.38766 13.4667 7.60618 13.8034 7.87971 14.0872C8.15584 14.3734 8.4763 14.5987 8.8334 14.7552C9.20329 14.9179 9.59533 15.0002 10.0002 15.0002C10.405 15.0002 10.797 14.9179 11.1669 14.7561C11.5231 14.6005 11.8471 14.3736 12.1206 14.0881C12.3967 13.802 12.6132 13.4676 12.7641 13.0965C12.9207 12.7122 13.001 12.2984 13.0002 11.8805C13.0002 11.4441 12.9149 11.0203 12.7453 10.6206Z" fill="#232323"/></svg></span>
+              <span class="label">Горячая вода</span>
+              <span class="value" id="valHot"></span>
+              <span class="chev"><svg width="10" height="24" viewBox="-2 -6 10 24" fill="none"><path d="M0.530273 0.530273L6.53027 6.53027L0.530273 12.5303" stroke-width="1.5" stroke-linejoin="round" stroke="#999999"/></svg></span>
+            </button>
+          </div>
+        </div>
+
+        <div class="group">
+          <h2>Электричество</h2>
+          <div class="card">
+            <div class="row">
+              <span class="ico"><svg width="20" height="20" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.4" fill="#f5f5f5"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.5 1.5M17.2 17.2l1.5 1.5M5.3 18.7l1.5-1.5M17.2 6.8l1.5-1.5" stroke="#f5f5f5" stroke-width="1.8" stroke-linecap="round"/></svg></span>
+              <span class="label">День</span>
+              <span class="value" id="valDay"></span>
+              <span class="chev"><svg width="10" height="24" viewBox="-2 -6 10 24" fill="none"><path d="M0.530273 0.530273L6.53027 6.53027L0.530273 12.5303" stroke-width="1.5" stroke-linejoin="round" stroke="#999999"/></svg></span>
+            </div>
+            <div class="divider"></div>
+            <div class="row">
+              <span class="ico"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M9.56041 2.18088C10.1592 2.14588 10.4587 2.89259 10.0016 3.28105C8.94201 4.1816 8.32031 5.4966 8.32031 6.91412C8.32031 9.54609 10.454 11.6797 13.0859 11.6797C14.5035 11.6797 15.8185 11.058 16.719 9.99841C17.1071 9.54183 17.8531 9.84017 17.8193 10.4385C17.5859 14.5669 14.1629 17.8126 10.0098 17.8126C5.68965 17.8126 2.1875 14.3104 2.1875 9.99029C2.1875 5.86158 5.39623 2.45076 9.49605 2.18465L9.50008 2.18439L9.56041 2.18088Z" fill-rule="evenodd" clip-rule="evenodd" fill="#F5F5F5"/></svg></span>
+              <span class="label">Ночь</span>
+              <span class="value" id="valNight"></span>
+              <span class="chev"><svg width="10" height="24" viewBox="-2 -6 10 24" fill="none"><path d="M0.530273 0.530273L6.53027 6.53027L0.530273 12.5303" stroke-width="1.5" stroke-linejoin="round" stroke="#999999"/></svg></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <button class="primary" type="button" id="sendBtn" disabled>Передать показания</button>
+    </section>
+
+    <!-- Экран ввода -->
+    <section class="screen input" id="inputScreen" aria-label="Ввод показаний">
+      <div class="nav">
+        <button class="glass-btn left" type="button" id="backBtn" aria-label="Назад к списку">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M15 19L8 12L15 5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke="#F5F5F5"/></svg>
+        </button>
+        <div class="nav-title">
+          <span id="inTitle">Холодная вода</span>
+          <span class="meter-no">№ <span id="numA">1015019434</span><b id="numB">800</b></span>
+        </div>
+        <button class="glass-btn right" type="button" aria-label="Включить фонарик">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M17.1947 3.20741C16.2182 3.10432 14.6391 3 12.25 3C9.86091 3 8.28223 3.10432 7.30532 3.20741C6.21591 3.32318 5.5 4.24814 5.5 5.27618V6.15777C9.64409 5.493 14.8559 5.493 19 6.15777V5.27618C19 4.24814 18.2841 3.32277 17.1947 3.20741ZM19 7.63009V7.401C14.8919 6.71455 9.60809 6.71455 5.5 7.401V7.63009C5.5 8.17255 5.64032 8.72605 5.95409 9.20468C5.96757 9.22439 5.9819 9.2435 5.99705 9.26195L8.00282 11.6584C8.14027 14.6497 8.36527 17.7874 8.48636 19.382C8.55386 20.2714 9.16545 21.09 10.1309 21.2463C10.6709 21.3334 11.3876 21.4091 12.25 21.4091C13.1124 21.4091 13.8291 21.3334 14.3691 21.2463C15.3345 21.09 15.9461 20.2714 16.0136 19.3825C16.1347 17.787 16.3597 14.6497 16.4972 11.6588L18.503 9.26195C18.5181 9.2435 18.5324 9.22439 18.5459 9.20468C18.8597 8.72605 19 8.17255 19 7.63009ZM11.4318 13.8409C11.4318 13.6239 11.518 13.4158 11.6715 13.2624C11.8249 13.1089 12.033 13.0227 12.25 13.0227C12.467 13.0227 12.6751 13.1089 12.8285 13.2624C12.982 13.4158 13.0682 13.6239 13.0682 13.8409V15.4773C13.0682 15.6943 12.982 15.9024 12.8285 16.0558C12.6751 16.2093 12.467 16.2955 12.25 16.2955C12.033 16.2955 11.8249 16.2093 11.6715 16.0558C11.518 15.9024 11.4318 15.6943 11.4318 15.4773V13.8409Z" fill-rule="evenodd" clip-rule="evenodd" fill="#F5F5F5"/></svg>
+        </button>
+      </div>
+
+      <div class="reading">
+        <span class="reading-label">Текущие показания</span>
+        <div class="reading-value">
+          <span class="num" id="shown">0</span>
+          <span class="caret" id="caret" aria-hidden="true"></span>
+          <span class="unit">м³</span>
+        </div>
+        <span class="support" id="support" aria-live="polite"></span>
+      </div>
+
+      <div class="keyboard" id="keyboard"></div>
+
+      <button class="primary" type="button" id="saveBtn" disabled>Сохранить</button>
+    </section>
+
+  </div>
+</main>
+<script src="app.js"></script>
+</body>
+</html>
