@@ -49,9 +49,18 @@
     inTitle: $('inTitle'), numA: $('numA'), numB: $('numB'),
     shown: $('shown'), caret: $('caret'), support: $('support'), keyboard: $('keyboard'),
   };
-  const rib = [0, 1, 2].map((i) => ({
-    clip: $('clip' + i), deep: $('deep' + i), bright: $('bright' + i), grp: $('grp' + i),
-  }));
+
+  // Ленты рисуются на холсте в пониженном разрешении: они всё равно размыты и под стеклом,
+  // а SVG-фильтры на iPhone считаются процессором и останавливают анимацию.
+  const RES = 0.5;
+  const cv = $('ribbons'), ctx = cv.getContext('2d');
+  const off = document.createElement('canvas'), octx = off.getContext('2d');
+  let cvH = 874;
+  function sizeRibbons(h) {
+    cvH = h;
+    off.width = cv.width = Math.ceil(402 * RES);
+    off.height = cv.height = Math.ceil(h * RES);
+  }
 
   // ---------- Утилиты ----------
   const now = () => performance.now() / 1000;
@@ -263,15 +272,34 @@
       const hot = state.stage === 'hot';
       const f = hot ? ease((sec - state.saveAt) / CONFIG.recolorTime) : 0;
       el.phone.style.background = mix('#141414', '#140e0d', f);
+      // Как preserveAspectRatio="xMidYMid slice": макет 402×874 покрывает экран любой высоты
+      const sc = Math.max(1, cvH / 874), s = RES * sc;
+      const ox = (402 - 402 * sc) / 2 * RES, oy = (cvH - 874 * sc) / 2 * RES;
+      // Размытие через тень: фигура уезжает за край, в кадре остаётся только её размытая тень
+      const blurred = (d, color, sigma) => {
+        const far = 10000;
+        octx.setTransform(s, 0, 0, s, ox - far, oy);
+        octx.shadowOffsetX = far;
+        octx.shadowBlur = 2 * sigma * s;
+        octx.shadowColor = octx.fillStyle = color;
+        octx.fill(new Path2D(d));
+      };
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.clearRect(0, 0, cv.width, cv.height);
       RIBBONS.forEach((r, i) => {
         const g = ribbonPaths(r, tau, amp);
-        rib[i].clip.setAttribute('d', g.clip);
-        rib[i].deep.setAttribute('d', g.deep);
-        rib[i].bright.setAttribute('d', g.bright);
-        rib[i].deep.setAttribute('fill', mix(COLD[i][0], HOT[i][0], f));
-        rib[i].bright.setAttribute('fill', mix(COLD[i][1], HOT[i][1], f));
-        rib[i].grp.setAttribute('opacity', Math.min(1, r.op * CONFIG.glow * 2).toFixed(3));
+        octx.setTransform(1, 0, 0, 1, 0, 0);
+        octx.clearRect(0, 0, off.width, off.height);
+        octx.save();
+        octx.setTransform(s, 0, 0, s, ox, oy);
+        octx.clip(new Path2D(g.clip));
+        blurred(g.deep, mix(COLD[i][0], HOT[i][0], f), 50);
+        blurred(g.bright, mix(COLD[i][1], HOT[i][1], f), 30);
+        octx.restore();
+        ctx.globalAlpha = Math.min(1, r.op * CONFIG.glow * 2);
+        ctx.drawImage(off, 0, 0);
       });
+      ctx.globalAlpha = 1;
     }
     if (!showInput) el.phone.style.background = '#141414';
 
@@ -300,6 +328,7 @@
       ps.transform = 'scale(' + Math.max(0.3, k) + ')';
       ps.height = '';
       vars.forEach((v) => ps.removeProperty(v));
+      sizeRibbons(874);
       return;
     }
     const k = window.innerWidth / 402;
@@ -312,6 +341,7 @@
     const readTop = (top + 56 + kbTop) / 2 - 80;
     ps.transform = 'scale(' + k + ')';
     ps.height = h + 'px';
+    sizeRibbons(h);
     ps.setProperty('--nav-top', top + 'px');
     ps.setProperty('--read-top', readTop + 'px');
     ps.setProperty('--quiet-top', readTop - 67 + 'px');

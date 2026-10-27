@@ -18,18 +18,7 @@
 
     <!-- Фон экрана ввода: ленты света под матовым стеклом -->
     <div class="input-bg" id="inputBg" aria-hidden="true">
-      <svg class="ribbons" width="402" height="874" viewBox="0 0 402 874" preserveAspectRatio="xMidYMid slice">
-        <defs>
-          <filter id="ribSoft" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="50"/></filter>
-          <filter id="ribEdge" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="30"/></filter>
-          <clipPath id="ribClip0"><path id="clip0"/></clipPath>
-          <clipPath id="ribClip1"><path id="clip1"/></clipPath>
-          <clipPath id="ribClip2"><path id="clip2"/></clipPath>
-        </defs>
-        <g clip-path="url(#ribClip0)" id="grp0"><path id="deep0" filter="url(#ribSoft)"/><path id="bright0" filter="url(#ribEdge)"/></g>
-        <g clip-path="url(#ribClip1)" id="grp1"><path id="deep1" filter="url(#ribSoft)"/><path id="bright1" filter="url(#ribEdge)"/></g>
-        <g clip-path="url(#ribClip2)" id="grp2"><path id="deep2" filter="url(#ribSoft)"/><path id="bright2" filter="url(#ribEdge)"/></g>
-      </svg>
+      <canvas class="ribbons" id="ribbons"></canvas>
       <div class="frost"></div>
       <div class="quiet"></div>
       <svg class="grain" width="402" height="874">
