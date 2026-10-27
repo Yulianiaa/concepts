@@ -282,11 +282,44 @@
   }
 
   // ---------- Масштаб под окно ----------
+  // На компьютере — телефон в рамке. На смартфоне — во весь экран, как приложение:
+  // шапка под настоящим статус-баром, кнопка и клавиатура прижаты к низу,
+  // цифры по центру между шапкой и клавиатурой (как в макете).
+  const isPhone = window.matchMedia('(max-width: 500px) and (pointer: coarse)');
+  const safe = document.createElement('div');
+  safe.style.cssText = 'position:fixed;visibility:hidden;pointer-events:none;' +
+    'padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)';
+  document.body.appendChild(safe);
+  const vars = ['--nav-top', '--read-top', '--quiet-top', '--kb-top', '--btn-top'];
+
   function fit() {
-    const k = Math.min(1, (window.innerHeight - 32) / 874, (window.innerWidth - 32) / 402);
-    el.phone.style.transform = 'scale(' + Math.max(0.3, k) + ')';
+    const ps = el.phone.style;
+    document.documentElement.classList.toggle('app', isPhone.matches);
+    if (!isPhone.matches) {
+      const k = Math.min(1, (window.innerHeight - 32) / 874, (window.innerWidth - 32) / 402);
+      ps.transform = 'scale(' + Math.max(0.3, k) + ')';
+      ps.height = '';
+      vars.forEach((v) => ps.removeProperty(v));
+      return;
+    }
+    const k = window.innerWidth / 402;
+    const h = window.innerHeight / k;
+    const cs = getComputedStyle(safe);
+    const top = Math.max(parseFloat(cs.paddingTop) / k, 8);
+    const bottom = Math.max(parseFloat(cs.paddingBottom) / k + 8, 16);
+    const btnTop = h - bottom - 56;
+    const kbTop = btnTop - 32 - 248;
+    const readTop = (top + 56 + kbTop) / 2 - 80;
+    ps.transform = 'scale(' + k + ')';
+    ps.height = h + 'px';
+    ps.setProperty('--nav-top', top + 'px');
+    ps.setProperty('--read-top', readTop + 'px');
+    ps.setProperty('--quiet-top', readTop - 67 + 'px');
+    ps.setProperty('--kb-top', kbTop + 'px');
+    ps.setProperty('--btn-top', btnTop + 'px');
   }
   window.addEventListener('resize', fit);
+  isPhone.addEventListener('change', fit);
   fit();
 
   render();

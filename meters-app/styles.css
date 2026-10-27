@@ -62,7 +62,7 @@ button { font: inherit; color: inherit; }
   -webkit-backdrop-filter: blur(28px);
 }
 .quiet {
-  position: absolute; left: -64px; top: 160px; width: 530px; height: 380px;
+  position: absolute; left: -64px; top: var(--quiet-top, 160px); width: 530px; height: 380px;
   background: radial-gradient(closest-side, rgba(20, 20, 20, 0.7), rgba(20, 20, 20, 0));
 }
 .grain { opacity: 0.34; mix-blend-mode: overlay; }
@@ -86,7 +86,7 @@ button { font: inherit; color: inherit; }
 .screen.visible { display: block; }
 
 .primary {
-  position: absolute; left: 16px; right: 16px; top: 776px; height: 56px;
+  position: absolute; left: 16px; right: 16px; top: var(--btn-top, 776px); height: 56px;
   border: none; border-radius: 20px;
   background: var(--primary); color: var(--primary-text);
   font-size: 18px; line-height: 24px; font-weight: 500;
@@ -96,7 +96,7 @@ button { font: inherit; color: inherit; }
 .primary:disabled { background: var(--disabled); color: var(--disabled-text); cursor: default; }
 
 /* ---------- Список ---------- */
-.list .nav { position: absolute; left: 0; top: 62px; width: 402px; height: 56px; }
+.list .nav { position: absolute; left: 0; top: var(--nav-top, 62px); width: 402px; height: 56px; }
 .icon-btn {
   position: absolute; top: 8px; width: 40px; height: 40px; padding: 0;
   border: none; background: transparent; display: flex; align-items: center; justify-content: center;
@@ -104,11 +104,11 @@ button { font: inherit; color: inherit; }
 .icon-btn.left { left: 4px; } /* иконка 24 в кнопке 40 → 12px от края */
 .icon-btn.right { right: 12px; }
 
-.list-head { position: absolute; left: 0; top: 122px; width: 402px; padding: 0 16px; display: flex; flex-direction: column; gap: 2px; }
+.list-head { position: absolute; left: 0; top: calc(var(--nav-top, 62px) + 60px); width: 402px; padding: 0 16px; display: flex; flex-direction: column; gap: 2px; }
 .list-head h1 { margin: 0; font-size: 28px; line-height: 32px; font-weight: 500; }
 .list-head p { margin: 0; font-size: 16px; line-height: 24px; color: var(--muted); }
 
-.groups { position: absolute; left: 16px; right: 16px; top: 212px; display: flex; flex-direction: column; gap: 32px; }
+.groups { position: absolute; left: 16px; right: 16px; top: calc(var(--nav-top, 62px) + 150px); display: flex; flex-direction: column; gap: 32px; }
 .group { display: flex; flex-direction: column; gap: 12px; }
 .group h2 { margin: 0; font-size: 18px; line-height: 24px; font-weight: 500; }
 .rows { display: flex; flex-direction: column; gap: 8px; }
@@ -128,7 +128,7 @@ button { font: inherit; color: inherit; }
 .chev { display: flex; }
 
 /* ---------- Ввод ---------- */
-.input .nav { position: absolute; left: 0; top: 62px; width: 402px; height: 56px; }
+.input .nav { position: absolute; left: 0; top: var(--nav-top, 62px); width: 402px; height: 56px; }
 .glass-btn {
   position: absolute; top: 4px; width: 48px; height: 48px; padding: 0;
   border: none; border-radius: 999px;
@@ -147,7 +147,7 @@ button { font: inherit; color: inherit; }
 .meter-no b { font-weight: 500; color: var(--text); }
 
 .reading {
-  position: absolute; left: 50%; top: 227px; width: 320px; transform: translateX(-50%);
+  position: absolute; left: 50%; top: var(--read-top, 227px); width: 320px; transform: translateX(-50%);
   display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center;
 }
 .reading-label { font-size: 16px; line-height: 24px; }
@@ -159,7 +159,7 @@ button { font: inherit; color: inherit; }
 .support { font-size: 16px; line-height: 24px; color: var(--muted-glass); min-height: 24px; }
 
 .keyboard {
-  position: absolute; left: 16px; right: 16px; top: 496px;
+  position: absolute; left: 16px; right: 16px; top: var(--kb-top, 496px);
   display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px;
 }
 .key {
@@ -172,6 +172,17 @@ button { font: inherit; color: inherit; }
   -webkit-tap-highlight-color: transparent;
 }
 .key:active { background: rgba(255, 255, 255, 0.14); }
+
+/* ---------- На телефоне: как настоящее приложение ----------
+   Рамки нет, экран во всю ширину, вместо нарисованного статус-бара — настоящий.
+   Высоту и позиции считает fit() в app.js. */
+.app, .app body { height: 100%; overflow: hidden; overscroll-behavior: none; background: var(--bg); }
+.app body { position: fixed; inset: 0; -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; }
+.app .stage { display: block; min-height: 0; height: 100%; }
+.app .phone { position: absolute; left: 0; top: 0; border-radius: 0; box-shadow: none; transform-origin: 0 0; }
+.app .statusbar { display: none; }
+.app .ribbons, .app .grain { width: 100%; height: 100%; }
+.app button { touch-action: manipulation; }
 
 :focus-visible { outline: 2px solid rgba(245, 245, 245, 0.7); outline-offset: 2px; }
 
