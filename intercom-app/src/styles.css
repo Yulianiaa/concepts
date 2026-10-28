@@ -6,7 +6,7 @@
   --color-success-bg: #F5F5F5;      /* Итоговая плашка «Дверь открыта» */
   --color-success-fg: #141414;      /* Текст и замок на итоговой плашке */
   --color-text: #FFFFFF;            /* Заголовок */
-  --color-text-secondary: #F5F5F5;  /* Статус: «Домофон», «Звонок завершен» */
+  --color-text-secondary: #F5F5F5;  /* Статус: «Звонок на домофон», «Звонок завершен» */
   --color-live: #FF1016;            /* Точка live */
   --glass-fill: rgba(255, 255, 255, 0.12);
   --glass-stroke: rgba(255, 255, 255, 0.12);
@@ -48,6 +48,9 @@
   background: #111318;
   font-family: var(--font);
   border-radius: 40px;
+  /* Without this macOS renders light text on dark heavier than in Figma (same as meters-app) */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .screen__photo {
@@ -195,7 +198,7 @@
   100% { box-shadow: 0 0 0 8px rgba(255, 16, 22, 0); }
 }
 
-/* Status text change: «Домофон» → «Звонок завершен» */
+/* Status text change: «Звонок на домофон» → «Звонок завершен» */
 .header__status-text.is-swapping { animation: status-in .35s var(--ease-out); }
 @keyframes status-in {
   from { opacity: 0; transform: translateY(6px); }
