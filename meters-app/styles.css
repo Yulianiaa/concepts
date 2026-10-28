@@ -16,8 +16,8 @@
   --primary-text: #141414;
   --disabled: #232323;
   --disabled-text: #7b7b7b;
-  /* Курсор мыши — белый кружок 20px; тонкая тёмная обводка, чтобы не терялся на светлой кнопке */
-  --cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20'%3E%3Ccircle cx='10' cy='10' r='9' fill='%23f5f5f5' stroke='rgba(0,0,0,0.25)'/%3E%3C/svg%3E") 10 10, auto;
+  /* Курсор мыши — белый кружок 16px с мягкой тенью, чтобы не терялся на светлой кнопке */
+  --cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='36' height='36'%3E%3Cfilter id='s' x='-50%25' y='-50%25' width='200%25' height='200%25'%3E%3CfeDropShadow dx='0' dy='0' stdDeviation='2.5' flood-opacity='0.25'/%3E%3C/filter%3E%3Ccircle cx='18' cy='18' r='8' fill='%23f5f5f5' filter='url(%23s)'/%3E%3C/svg%3E") 18 18, auto;
 }
 
 * { box-sizing: border-box; }
