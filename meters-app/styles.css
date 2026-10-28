@@ -16,6 +16,8 @@
   --primary-text: #141414;
   --disabled: #232323;
   --disabled-text: #7b7b7b;
+  /* Курсор мыши — белый кружок 20px; тонкая тёмная обводка, чтобы не терялся на светлой кнопке */
+  --cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20'%3E%3Ccircle cx='10' cy='10' r='9' fill='%23f5f5f5' stroke='rgba(0,0,0,0.25)'/%3E%3C/svg%3E") 10 10, auto;
 }
 
 * { box-sizing: border-box; }
@@ -30,6 +32,7 @@ html, body {
 }
 
 button { font: inherit; color: inherit; }
+html, html * { cursor: var(--cursor); }
 
 .stage {
   min-height: 100vh;
@@ -90,10 +93,10 @@ button { font: inherit; color: inherit; }
   border: none; border-radius: 20px;
   background: var(--primary); color: var(--primary-text);
   font-size: 18px; line-height: 24px; font-weight: 500;
-  cursor: pointer;
+  cursor: var(--cursor);
   transition: background 0.2s, color 0.2s;
 }
-.primary:disabled { background: var(--disabled); color: var(--disabled-text); cursor: default; }
+.primary:disabled { background: var(--disabled); color: var(--disabled-text); cursor: var(--cursor); }
 
 /* ---------- Список ---------- */
 .list .nav { position: absolute; left: 0; top: var(--nav-top, 62px); width: 402px; height: 56px; }
@@ -115,13 +118,13 @@ button { font: inherit; color: inherit; }
 
 .cell, .card { border-radius: 20px; background: var(--cell); }
 .cell {
-  width: 100%; padding: 16px; border: none; text-align: left; cursor: pointer;
+  width: 100%; padding: 16px; border: none; text-align: left; cursor: var(--cursor);
   display: flex; align-items: center; gap: 8px;
 }
 .card { padding: 16px; display: flex; flex-direction: column; gap: 16px; }
 .row {
   display: flex; align-items: center; gap: 8px;
-  width: 100%; padding: 0; border: none; background: none; text-align: left; cursor: pointer;
+  width: 100%; padding: 0; border: none; background: none; text-align: left; cursor: var(--cursor);
 }
 .divider { height: 1px; background: var(--cell); }
 .ico { padding: 2px; display: flex; }
@@ -137,7 +140,7 @@ button { font: inherit; color: inherit; }
   border: none; border-radius: 999px;
   background: rgba(255, 255, 255, 0.04);
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  display: flex; align-items: center; justify-content: center; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; cursor: var(--cursor);
 }
 .glass-btn.left { left: 16px; }
 .glass-btn.right { right: 16px; }
@@ -171,7 +174,7 @@ button { font: inherit; color: inherit; }
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.1);
   font-size: 24px; line-height: 32px; font-weight: 500;
   display: flex; align-items: center; justify-content: center;
-  cursor: pointer; transition: background 0.12s;
+  cursor: var(--cursor); transition: background 0.12s;
   -webkit-tap-highlight-color: transparent;
 }
 .key:active { background: rgba(255, 255, 255, 0.14); }
