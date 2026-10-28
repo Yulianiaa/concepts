@@ -20,7 +20,10 @@
     body { margin: 0; background: #141414; font-family: system-ui, sans-serif; color: #F5F5F5; }
 
     /* Prototype: one phone, scaled to fit the window */
-    .stage { min-height: 100vh; min-height: 100svh; display: flex; align-items: center; justify-content: center; padding: 24px 16px; box-sizing: border-box; }
+    .stage { min-height: 100vh; min-height: 100svh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 28px; padding: 24px 16px; box-sizing: border-box; }
+    .stage__author { margin: 0; font-size: 14px; color: rgba(245, 245, 245, .6); }
+    .stage__author a { color: #4DA3FF; text-decoration: none; }
+    .stage__author a:hover { color: #7DBBFF; }
     /* iPhone frame, same as meters-app: 10px bezel ring + Dynamic Island */
     .stage__phone .screen { zoom: var(--fit, 1); border-radius: 54px; box-shadow: 0 0 0 10px #1c1c1e, 0 30px 80px rgba(0, 0, 0, .6); }
     .island { position: absolute; left: 138.5px; top: 11px; width: 125px; height: 37px; border-radius: 20px; background: #000; }
@@ -43,13 +46,14 @@
     .app body { position: fixed; inset: 0; -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; }
     .app .stage { display: block; min-height: 0; height: 100%; padding: 0; }
     .app .stage__phone .screen { border-radius: 0; box-shadow: none; }
-    .app .island, .app .screen__statusbar, .app .gallery { display: none; }
+    .app .island, .app .screen__statusbar, .app .stage__author, .app .gallery { display: none; }
     .app button { touch-action: manipulation; }
   </style>
 </head>
 <body>
   <section class="stage">
     <div class="stage__phone" id="proto"></div>
+    <p class="stage__author">Автор <a href="https://t.me/yulianiaa" target="_blank" rel="noopener">@yulianiaa</a></p>
   </section>
 
   <section class="gallery">
@@ -81,7 +85,7 @@
     function fit() {
       document.documentElement.classList.toggle('app', isPhone.matches);
       if (!isPhone.matches) {
-        proto.style.setProperty('--fit', Math.max(.3, Math.min(1, (innerHeight - 68) / 874, (innerWidth - 52) / 402)));
+        proto.style.setProperty('--fit', Math.max(.3, Math.min(1, (innerHeight - 116) / 874, (innerWidth - 52) / 402)));
         screen.style.height = '';
         screen.style.removeProperty('--header-top');
         screen.style.removeProperty('--controls-top');

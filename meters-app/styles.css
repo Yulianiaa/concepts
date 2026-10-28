@@ -35,8 +35,8 @@ button { font: inherit; color: inherit; }
 html, html * { cursor: var(--cursor); }
 
 .stage {
-  min-height: 100vh;
-  min-height: 100dvh;
+  height: 100vh;
+  height: 100dvh;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -54,6 +54,15 @@ html, html * { cursor: var(--cursor); }
   transform-origin: center center;
   box-shadow: 0 0 0 10px #1c1c1e, 0 30px 80px rgba(0, 0, 0, 0.6);
 }
+
+/* Подпись под телефоном (только на компьютере). Телефон масштабируется transform-ом,
+   поэтому подпись ставится по --phone-bottom, который считает fit() в app.js. */
+.author {
+  position: absolute; left: 0; right: 0; top: var(--phone-bottom, auto); margin: 0;
+  text-align: center; font-size: 14px; line-height: 20px; color: rgba(245, 245, 245, 0.6);
+}
+.author a { color: #4DA3FF; text-decoration: none; }
+.author a:hover { color: #7DBBFF; }
 
 /* ---------- Фон экрана ввода ---------- */
 .input-bg { position: absolute; inset: 0; display: none; }
@@ -191,7 +200,7 @@ html, html * { cursor: var(--cursor); }
 .app body { position: fixed; inset: 0; -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; }
 .app .stage { display: block; min-height: 0; height: 100%; }
 .app .phone { position: absolute; left: 0; top: 0; border-radius: 0; box-shadow: none; transform-origin: 0 0; }
-.app .statusbar { display: none; }
+.app .statusbar, .app .author { display: none; }
 /* Фон 402×874 по центру экрана; на очень высоком экране чуть растягивается */
 .app .bg-soft, .app .bg-sharp { top: 50%; height: max(874px, 100%); margin-top: calc(max(874px, 100%) / -2); }
 .app button { touch-action: manipulation; }

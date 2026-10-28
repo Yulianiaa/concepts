@@ -269,8 +269,11 @@
     const ps = el.phone.style;
     document.documentElement.classList.toggle('app', isPhone.matches);
     if (!isPhone.matches) {
-      const k = Math.min(1, (window.innerHeight - 32) / 874, (window.innerWidth - 32) / 402);
-      ps.transform = 'scale(' + Math.max(0.3, k) + ')';
+      // Телефон чуть выше центра, под ним подпись «Автор @yulianiaa» (28 отступ + 20 строка)
+      const k = Math.max(0.3, Math.min(1, (window.innerHeight - 116) / 874, (window.innerWidth - 32) / 402));
+      ps.transform = 'translateY(-24px) scale(' + k + ')';
+      const bottom = el.phone.getBoundingClientRect().bottom + window.scrollY;
+      document.documentElement.style.setProperty('--phone-bottom', bottom + 28 + 'px');
       ps.height = '';
       vars.forEach((v) => ps.removeProperty(v));
       return;
