@@ -1,0 +1,256 @@
+/* Intercom call screen — design tokens and component styles */
+
+:root {
+  /* Colors */
+  --color-accent: #FF5C00;          /* Кнопка «Открыть», круг загрузки */
+  --color-success-bg: #F5F5F5;      /* Итоговая плашка «Дверь открыта» */
+  --color-success-fg: #141414;      /* Текст и замок на итоговой плашке */
+  --color-text: #FFFFFF;            /* Заголовок */
+  --color-text-secondary: #F5F5F5;  /* Статус: «Домофон», «Звонок завершен» */
+  --color-live: #FF1016;            /* Точка live */
+  --glass-fill: rgba(255, 255, 255, 0.12);
+  --glass-stroke: rgba(255, 255, 255, 0.12);
+  --glass-blur: 20px;
+  --top-gradient: linear-gradient(180deg, rgba(5, 5, 5, 0.6) 0%, rgba(5, 5, 5, 0) 100%);
+
+  /* Typography (Geologica) */
+  --font: "Geologica", system-ui, sans-serif;
+  --title-size: 52px;
+  --title-line: 52px;
+  --title-weight: 800;
+  --title-tracking: -3.1px;         /* −6% */
+  --body-size: 24px;
+  --body-line: 32px;
+  --body-weight: 400;
+
+  /* Layout (iPhone 16 Pro, 402 × 874) */
+  --screen-w: 402px;
+  --screen-h: 874px;
+  --side-padding: 24px;
+  --header-top: 94px;
+  --controls-top: 768px;
+  --control-size: 64px;
+  --open-width: 194px;
+
+  /* Motion */
+  --ease-morph: cubic-bezier(.65, 0, .35, 1);
+  --morph-duration: .45s;
+  --ease-out: cubic-bezier(.22, 1, .36, 1);
+}
+
+* { box-sizing: border-box; }
+
+.screen {
+  position: relative;
+  width: var(--screen-w);
+  height: var(--screen-h);
+  overflow: hidden;
+  background: #111318;
+  font-family: var(--font);
+  border-radius: 40px;
+}
+
+.screen__photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.screen__gradient {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 178px;
+  background: var(--top-gradient);
+}
+
+.screen__statusbar { position: absolute; left: 0; top: 0; }
+
+/* Header */
+.header {
+  position: absolute;
+  left: var(--side-padding);
+  right: var(--side-padding);
+  top: var(--header-top);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.header__status {
+  height: 32px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: var(--body-size);
+  line-height: var(--body-line);
+  font-weight: var(--body-weight);
+  color: var(--color-text-secondary);
+}
+
+.header__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 4px;
+  background: var(--color-live);
+}
+
+.header__title {
+  margin: 0;
+  font-size: var(--title-size);
+  line-height: var(--title-line);
+  font-weight: var(--title-weight);
+  letter-spacing: var(--title-tracking);
+  color: var(--color-text);
+  white-space: nowrap;
+}
+
+/* Controls */
+.controls {
+  position: absolute;
+  left: var(--side-padding);
+  right: var(--side-padding);
+  top: var(--controls-top);
+  height: var(--control-size);
+}
+
+.glass-btn {
+  position: absolute;
+  top: 0;
+  width: var(--control-size);
+  height: var(--control-size);
+  border-radius: 999px;
+  border: 1px solid var(--glass-stroke);
+  background: var(--glass-fill);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  cursor: pointer;
+  transition: opacity .25s ease, transform .3s ease;
+}
+.glass-btn--left { left: 0; }
+.glass-btn--right { right: 0; }
+
+.open-btn {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: var(--open-width);
+  height: var(--control-size);
+  transform: translateX(-50%);
+  border: none;
+  border-radius: 999px;
+  background: var(--color-accent);
+  color: #fff;
+  padding: 0;
+  overflow: hidden;
+  cursor: pointer;
+  font-family: var(--font);
+  transition: width var(--morph-duration) var(--ease-morph), background-color var(--morph-duration) ease, transform .15s ease;
+}
+
+.open-btn__layer {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  white-space: nowrap;
+  font-size: var(--body-size);
+  line-height: var(--body-line);
+  font-weight: var(--body-weight);
+  opacity: 0;
+  transition: opacity .2s ease;
+}
+.open-btn__layer--done { color: var(--color-success-fg); }
+
+/* States: idle → loading → done */
+.is-idle .open-btn__layer--label { opacity: 1; }
+
+.is-loading .glass-btn,
+.is-done .glass-btn { opacity: 0; transform: scale(.6); pointer-events: none; }
+
+.is-loading .open-btn { width: var(--control-size); }
+.is-loading .open-btn__layer--loading { opacity: 1; transition-delay: .3s; }
+
+.is-done .open-btn { width: 100%; background: var(--color-success-bg); }
+.is-done .open-btn__layer--done { opacity: 1; transition: opacity .3s ease .35s; }
+
+/* Press feedback (idle only — later states have no tappable side buttons) */
+.is-idle .open-btn:active { transform: translateX(-50%) scale(.96); }
+.is-idle .glass-btn:active { transform: scale(.92); transition-duration: .15s; }
+
+/* Live dot: soft pulsing ring while the call is incoming */
+.header__dot { animation: live 1.6s ease-out infinite; }
+@keyframes live {
+  0% { box-shadow: 0 0 0 0 rgba(255, 16, 22, .6); }
+  100% { box-shadow: 0 0 0 8px rgba(255, 16, 22, 0); }
+}
+
+/* Status text change: «Домофон» → «Звонок завершен» */
+.header__status-text.is-swapping { animation: status-in .35s var(--ease-out); }
+@keyframes status-in {
+  from { opacity: 0; transform: translateY(6px); }
+}
+
+/* Entrance: the incoming call appears (fill «backwards» so state transitions still work after) */
+.has-intro .screen__photo { animation: intro-photo 1s var(--ease-out) backwards; }
+.has-intro .screen__gradient,
+.has-intro .screen__statusbar { animation: intro-fade .6s ease .2s backwards; }
+.has-intro .header { animation: intro-fade .6s ease .35s backwards; }
+/* Buttons fade one by one, not the whole .controls: opacity on a parent switches off the glass blur until it ends */
+.has-intro .glass-btn { animation: intro-fade .6s ease .35s backwards; }
+.has-intro .open-btn { animation: intro-fade .6s ease .35s backwards; }
+@keyframes intro-photo {
+  from { opacity: 0; transform: scale(1.08); filter: blur(12px); }
+}
+@keyframes intro-fade {
+  from { opacity: 0; }
+}
+
+/* Loading dots: dip down and back, one after another */
+.loader-dot {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: dip .9s ease-in-out infinite;
+}
+.loader-dot:nth-child(2) { animation-delay: .15s; }
+.loader-dot:nth-child(3) { animation-delay: .3s; }
+@keyframes dip {
+  0%, 70%, 100% { transform: translateY(0); }
+  35% { transform: translateY(5px); }
+}
+
+/* Lock: shackle lifts and swings open */
+.lock__shackle { transform-box: view-box; transform-origin: 20px 13.3px; }
+.is-done .lock__shackle { animation: unlock .55s cubic-bezier(.4, 0, .2, 1) .9s forwards; }
+@keyframes unlock {
+  0% { transform: translateY(0) scaleX(1); }
+  35% { transform: translateY(-3px) scaleX(1); }
+  100% { transform: translateY(-3px) scaleX(-1); }
+}
+
+/* Static frames (gallery): no transitions, fixed lock state */
+.is-static .open-btn,
+.is-static .open-btn__layer,
+.is-static .glass-btn { transition: none; }
+.is-static .lock__shackle,
+.is-static .header__dot { animation: none; }
+.is-static.lock-open .lock__shackle { transform: translateY(-3px) scaleX(-1); }
+
+@media (prefers-reduced-motion: reduce) {
+  .open-btn, .open-btn__layer, .glass-btn { transition-duration: .01s; }
+  .loader-dot { animation: none; }
+  .is-done .lock__shackle { animation-duration: .01s; animation-delay: 0s; }
+  .header__dot, .header__status-text.is-swapping,
+  .has-intro .screen__photo, .has-intro .screen__gradient, .has-intro .screen__statusbar,
+  .has-intro .header, .has-intro .glass-btn, .has-intro .open-btn { animation: none; }
+}

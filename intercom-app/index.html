@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#141414">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Домофон">
+  <title>[UI концепт] Приложение домофона</title>
+  <meta name="description" content="Автор t.me/yulianiaa">
+  <meta property="og:title" content="[UI концепт] Приложение домофона">
+  <meta property="og:description" content="Автор t.me/yulianiaa">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geologica:wght@400;500;800&display=swap">
+  <link rel="stylesheet" href="src/styles.css">
+  <style>
+    body { margin: 0; background: #141414; font-family: system-ui, sans-serif; color: #F5F5F5; }
+
+    /* Prototype: one phone, scaled to fit the window */
+    .stage { min-height: 100vh; min-height: 100svh; display: flex; align-items: center; justify-content: center; padding: 24px 16px; box-sizing: border-box; }
+    /* iPhone frame, same as meters-app: 10px bezel ring + Dynamic Island */
+    .stage__phone .screen { zoom: var(--fit, 1); border-radius: 54px; box-shadow: 0 0 0 10px #1c1c1e, 0 30px 80px rgba(0, 0, 0, .6); }
+    .island { position: absolute; left: 138.5px; top: 11px; width: 125px; height: 37px; border-radius: 20px; background: #000; }
+
+    /* Gallery of static frames */
+    .gallery { padding: 64px 48px 80px; border-top: 1px solid rgba(255, 255, 255, .08); }
+    h2 { font-size: 16px; font-weight: 500; margin: 0 0 24px; }
+    .row { display: flex; flex-wrap: wrap; gap: 32px; }
+    .frame { display: flex; flex-direction: column; gap: 12px; }
+    .frame .screen { zoom: .7; }
+    .frame__label { font-size: 14px; color: rgba(245, 245, 245, .6); }
+
+    @media (max-width: 480px) {
+      .gallery { padding: 48px 16px; }
+    }
+
+    /* On a smartphone: full screen like a real app (as in meters-app).
+       No bezel and no drawn status bar — the real one is used. Height and positions come from fit(). */
+    .app, .app body { height: 100%; overflow: hidden; overscroll-behavior: none; }
+    .app body { position: fixed; inset: 0; -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; }
+    .app .stage { display: block; min-height: 0; height: 100%; padding: 0; }
+    .app .stage__phone .screen { border-radius: 0; box-shadow: none; }
+    .app .island, .app .screen__statusbar, .app .gallery { display: none; }
+    .app button { touch-action: manipulation; }
+  </style>
+</head>
+<body>
+  <section class="stage">
+    <div class="stage__phone" id="proto"></div>
+  </section>
+
+  <section class="gallery">
+    <h2>Сценарий: входящий вызов → открытие двери</h2>
+    <div class="row">
+      <div class="frame"><span class="frame__label">1 · Входящий вызов</span><div id="s1"></div></div>
+      <div class="frame"><span class="frame__label">2 · Открываем</span><div id="s2"></div></div>
+      <div class="frame"><span class="frame__label">3 · Дверь открыта</span><div id="s3"></div></div>
+      <div class="frame"><span class="frame__label">4 · Дверь открыта (замок открыт)</span><div id="s4"></div></div>
+    </div>
+  </section>
+
+  <script src="src/intercom.js"></script>
+  <script>
+    const proto = document.getElementById('proto');
+
+    const screen = createIntercomScreen(proto, { interactive: true, intro: true });
+    screen.insertAdjacentHTML('beforeend', '<div class="island" aria-hidden="true"></div>');
+
+    // Fit to the window, same approach as meters-app.
+    // Desktop: the phone in a bezel. Smartphone: full screen — header under the real status bar,
+    // buttons pinned above the home indicator (gaps as in the 402 × 874 layout).
+    const isPhone = matchMedia('(max-width: 500px) and (pointer: coarse)');
+    const safe = document.createElement('div');
+    safe.style.cssText = 'position:fixed;visibility:hidden;pointer-events:none;' +
+      'padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)';
+    document.body.appendChild(safe);
+
+    function fit() {
+      document.documentElement.classList.toggle('app', isPhone.matches);
+      if (!isPhone.matches) {
+        proto.style.setProperty('--fit', Math.max(.3, Math.min(1, (innerHeight - 68) / 874, (innerWidth - 52) / 402)));
+        screen.style.height = '';
+        screen.style.removeProperty('--header-top');
+        screen.style.removeProperty('--controls-top');
+        return;
+      }
+      const k = innerWidth / 402;
+      const h = innerHeight / k;
+      const cs = getComputedStyle(safe);
+      const top = Math.max(parseFloat(cs.paddingTop) / k, 20);
+      const bottom = Math.max(parseFloat(cs.paddingBottom) / k + 8, 24);
+      proto.style.setProperty('--fit', k);
+      screen.style.height = h + 'px';
+      screen.style.setProperty('--header-top', top + 32 + 'px');      // 94 − 62 (status bar) in the layout
+      screen.style.setProperty('--controls-top', h - bottom - 64 + 'px');
+    }
+    addEventListener('resize', fit);
+    isPhone.addEventListener('change', fit);
+    fit();
+
+    createIntercomScreen(document.getElementById('s1'), { state: 'idle' });
+    createIntercomScreen(document.getElementById('s2'), { state: 'loading' });
+    createIntercomScreen(document.getElementById('s3'), { state: 'done' });
+    createIntercomScreen(document.getElementById('s4'), { state: 'done', lockOpen: true });
+  </script>
+</body>
+</html>
