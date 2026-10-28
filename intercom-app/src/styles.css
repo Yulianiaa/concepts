@@ -36,7 +36,12 @@
   --ease-morph: cubic-bezier(.65, 0, .35, 1);
   --morph-duration: .45s;
   --ease-out: cubic-bezier(.22, 1, .36, 1);
+
+  /* Mouse cursor, same as meters-app: white 16px dot with a soft even shadow, everywhere incl. buttons */
+  --cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='36' height='36'%3E%3Cfilter id='s' x='-50%25' y='-50%25' width='200%25' height='200%25'%3E%3CfeDropShadow dx='0' dy='0' stdDeviation='2.5' flood-opacity='0.25'/%3E%3C/filter%3E%3Ccircle cx='18' cy='18' r='8' fill='%23f5f5f5' filter='url(%23s)'/%3E%3C/svg%3E") 18 18, auto;
 }
+
+html, html * { cursor: var(--cursor); }
 
 * { box-sizing: border-box; }
 
@@ -135,7 +140,7 @@
   align-items: center;
   justify-content: center;
   padding: 0;
-  cursor: pointer;
+  cursor: var(--cursor);
   transition: opacity .25s ease, transform .3s ease;
 }
 .glass-btn--left { left: 0; }
@@ -154,7 +159,7 @@
   color: #fff;
   padding: 0;
   overflow: hidden;
-  cursor: pointer;
+  cursor: var(--cursor);
   font-family: var(--font);
   transition: width var(--morph-duration) var(--ease-morph), background-color var(--morph-duration) ease, transform .15s ease;
 }
