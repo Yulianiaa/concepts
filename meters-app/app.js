@@ -18,16 +18,18 @@
   const METERS = {
     cold: { title: 'Холодная вода', numA: '1015019434', numB: '800', prev: 67.68, accent: '#c4e9fb' },
     hot:  { title: 'Горячая вода',  numA: '1015015959', numB: '600', prev: 29,    accent: '#ffc9a8' },
+    day:   { title: 'День', numA: '1.8.1 ', numB: 'T1', pre: '', prev: 845, accent: '#f3ebe1', unit: 'кВт·ч' },
+    night: { title: 'Ночь', numA: '1.8.2 ', numB: 'T2', pre: '', prev: 249, accent: '#dccbff', unit: 'кВт·ч' },
   };
+  // После сохранения первого счётчика пары сразу открывается второй
+  const NEXT = { day: 'night' };
+  const isLight = (stage) => stage === 'day' || stage === 'night';
+  const isSecond = (stage) => stage === 'hot' || stage === 'night';
 
-  // Три ленты: [deep, bright] цвета для холодной и горячей воды
-  const COLD = [['#0b3a5c', '#2f8fc8'], ['#0e1240', '#3a3fb0'], ['#0f4f9a', '#57c6f5']];
-  const HOT  = [['#5a1206', '#c2381a'], ['#3a0605', '#c0170f'], ['#a8180a', '#ff5226']];
-  const RIBBONS = [
-    { A: [-300, 520],  B: [520, 1340], amp: 70,  k: 1.7, v: -0.55, p: 4.0, side: 1,  wb: 60, wd: 160, drift: 35, ds: 0.17, op: 0.5,  cv: 0.4,  span: 0.5 },
-    { A: [-250, -260], B: [660, 720],  amp: 85,  k: 1.3, v: 0.42,  p: 2.1, side: -1, wb: 70, wd: 190, drift: 40, ds: 0.25, op: 0.6,  cv: 0.3,  span: 0.5 },
-    { A: [-250, 40],   B: [660, 1030], amp: 100, k: 1.5, v: 0.5,   p: 0,   side: 1,  wb: 90, wd: 220, drift: 45, ds: 0.2,  op: 0.95, cv: 0.35, span: 0.55 },
-  ];
+  // Фон экрана ввода (ленты и лучи) рисует bg.js
+  const RAY = { speed: 1 };   // скорость движения лучей (0.5 = спокойнее, 2 = быстрее)
+  const BGCOL = { water: ['#141414', '#140e0d'], light: ['#14120f', '#0e0e12'] };
+  const glints = [];
 
   // ---------- Состояние ----------
   const state = {
@@ -36,7 +38,7 @@
     value: '',
     saveAt: -99,
     trans: null,         // { to: 'input' | 'list', t0 }
-    saved: { cold: '', hot: '', day: '862', night: '254' },
+    saved: { cold: '', hot: '', day: '', night: '' },
   };
 
   // ---------- DOM ----------
@@ -48,19 +50,8 @@
     sendBtn: $('sendBtn'), saveBtn: $('saveBtn'), backBtn: $('backBtn'),
     inTitle: $('inTitle'), numA: $('numA'), numB: $('numB'),
     shown: $('shown'), caret: $('caret'), support: $('support'), keyboard: $('keyboard'),
+    unit: $('unit'), numPre: $('numPre'), bgSoft: $('bgSoft'), bgSharp: $('bgSharp'),
   };
-
-  // Ленты рисуются на холсте в пониженном разрешении: они всё равно размыты и под стеклом,
-  // а SVG-фильтры на iPhone считаются процессором и останавливают анимацию.
-  const RES = 0.5;
-  const cv = $('ribbons'), ctx = cv.getContext('2d');
-  const off = document.createElement('canvas'), octx = off.getContext('2d');
-  let cvH = 874;
-  function sizeRibbons(h) {
-    cvH = h;
-    off.width = cv.width = Math.ceil(402 * RES);
-    off.height = cv.height = Math.ceil(h * RES);
-  }
 
   // ---------- Утилиты ----------
   const now = () => performance.now() / 1000;
@@ -70,43 +61,10 @@
     const x = rgb(a), y = rgb(b);
     return 'rgb(' + x.map((v, i) => Math.round(v + (y[i] - v) * f)).join(',') + ')';
   };
+  const mixArr = (a, b, f) => { const x = rgb(a), y = rgb(b); return x.map((v, i) => Math.round(v + (y[i] - v) * f)); };
+  const rgba = (c, a) => 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',' + Math.max(0, a).toFixed(3) + ')';
   const fmt = (x) => x.toFixed(2).replace(/\.?0+$/, '').replace('.', ',');
   const parseValue = (v) => (v ? parseFloat(v.replace(',', '.')) : NaN);
-
-  // ---------- Геометрия лент ----------
-  function ribbonPaths(r, t, ampMul) {
-    const N = 48;
-    const dx = r.B[0] - r.A[0], dy = r.B[1] - r.A[1], L = Math.hypot(dx, dy);
-    const nx = -dy / L, ny = dx / L;
-    const shift = r.drift * ampMul * Math.sin(t * r.ds + r.p);
-    const ph = t * r.v + r.p;
-    const c = 0.5 + 0.22 * Math.sin(t * r.cv + r.p * 1.3);
-    const env = (s, span) => {
-      const u = (s - c) / span + 0.5;
-      return u <= 0 || u >= 1 ? 0 : Math.pow(Math.sin(Math.PI * u), 1.4);
-    };
-    const line = (off) => {
-      const a = [];
-      for (let i = 0; i <= N; i++) {
-        const s = i / N;
-        const w = ampMul * (r.amp * Math.sin(Math.PI * r.k * s + ph) +
-          r.amp * 0.35 * Math.sin(Math.PI * r.k * 2.3 * s - ph * 0.7 + r.p));
-        const o = w + shift + off(s);
-        a.push([r.A[0] + dx * s + nx * o, r.A[1] + dy * s + ny * o]);
-      }
-      return a;
-    };
-    const band = (f1, f2) => {
-      const pts = line(f1).concat(line(f2).reverse());
-      return 'M' + pts.map((p) => p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join(' L') + ' Z';
-    };
-    const sd = r.side;
-    return {
-      clip: band(() => 0, () => sd * 1400),
-      bright: band(() => -sd * 30, (s) => sd * r.wb * env(s, r.span)),
-      deep: band(() => -sd * 30, (s) => sd * r.wd * env(s, r.span * 1.5)),
-    };
-  }
 
   // ---------- Клавиатура ----------
   ['1', '2', '3', '4', '5', '6', '7', '8', '9', ',', '0'].forEach((k) => {
@@ -131,7 +89,14 @@
     if (k === ',' && (v.includes(',') || v === '')) return;
     if (v.replace(',', '').length >= 7) return;
     state.value = v + k;
+    addGlint();
     render();
+  }
+
+  function addGlint() {
+    if (!isLight(state.stage)) return;
+    glints.push({ t0: now(), beam: 3 + Math.floor(Math.random() * 3), dir: Math.random() < 0.5 ? -1 : 1 });
+    if (glints.length > 4) glints.shift();
   }
 
   function canSave() {
@@ -143,14 +108,14 @@
     state.screen = 'input';
     state.stage = stage;
     state.value = '';
-    state.saveAt = stage === 'hot' ? now() - 10 : -99;
+    state.saveAt = isSecond(stage) ? now() - 10 : -99;
     state.trans = { to: 'input', t0: now() };
     render();
   }
 
   function back() {
     state.screen = 'list';
-    state.value = '';
+    // Значение не сбрасываем: экран ввода гаснет с введёнными цифрами, а очищается при следующем открытии
     state.trans = { to: 'list', t0: now() };
     render();
   }
@@ -158,8 +123,8 @@
   function save() {
     if (!canSave()) return;
     state.saved[state.stage] = state.value;
-    if (state.stage === 'cold') {
-      state.stage = 'hot';
+    if (NEXT[state.stage]) {
+      state.stage = NEXT[state.stage];
       state.value = '';
       state.saveAt = now();
     } else {
@@ -171,6 +136,8 @@
 
   $('rowCold').addEventListener('click', () => open('cold'));
   $('rowHot').addEventListener('click', () => open('hot'));
+  $('rowDay').addEventListener('click', () => open('day'));
+  $('rowNight').addEventListener('click', () => open('night'));
   el.backBtn.addEventListener('click', back);
   el.saveBtn.addEventListener('click', save);
 
@@ -195,21 +162,25 @@
 
     const m = METERS[state.stage];
     el.inTitle.textContent = m.title;
+    el.numPre.textContent = m.pre ?? '№ ';
     el.numA.textContent = m.numA;
     el.numB.textContent = m.numB;
+    const unit = m.unit || 'м³';
+    el.unit.textContent = unit;
+    el.inputBg.classList.toggle('light', isLight(state.stage));
     el.shown.textContent = state.value || '0';
     el.shown.classList.toggle('empty', !state.value);
 
     const ok = canSave();
     const num = parseValue(state.value);
     if (ok) {
-      el.support.textContent = 'Текущий расход — ' + (num - m.prev).toFixed(2).replace('.', ',') + ' м³';
+      el.support.textContent = 'Текущий расход — ' + fmt(num - m.prev) + ' ' + unit;
       el.support.style.color = m.accent;
     } else if (!isNaN(num)) {
-      el.support.textContent = 'Новые показания должны быть не ниже предыдущих';
+      el.support.textContent = 'Новые показания должны быть не ниже предыдущих';
       el.support.style.color = '';
     } else {
-      el.support.textContent = 'Предыдущие показания — ' + fmt(m.prev) + ' м³';
+      el.support.textContent = 'Предыдущие показания — ' + fmt(m.prev) + ' ' + unit;
       el.support.style.color = '';
     }
     el.saveBtn.disabled = !ok;
@@ -266,40 +237,14 @@
     el.inputBg.style.display = showInput ? 'block' : 'none';
     el.cover.style.opacity = coverOp;
 
-    // Ленты — примерно 30 кадров в секунду, только когда виден экран ввода
+    // Фон — примерно 30 кадров в секунду, только когда виден экран ввода
     if (showInput && t - lastRib > 33) {
       lastRib = t;
-      const hot = state.stage === 'hot';
-      const f = hot ? ease((sec - state.saveAt) / CONFIG.recolorTime) : 0;
-      el.phone.style.background = mix('#141414', '#140e0d', f);
-      // Как preserveAspectRatio="xMidYMid slice": макет 402×874 покрывает экран любой высоты
-      const sc = Math.max(1, cvH / 874), s = RES * sc;
-      const ox = (402 - 402 * sc) / 2 * RES, oy = (cvH - 874 * sc) / 2 * RES;
-      // Размытие через тень: фигура уезжает за край, в кадре остаётся только её размытая тень
-      const blurred = (d, color, sigma) => {
-        const far = 10000;
-        octx.setTransform(s, 0, 0, s, ox - far, oy);
-        octx.shadowOffsetX = far;
-        octx.shadowBlur = 2 * sigma * s;
-        octx.shadowColor = octx.fillStyle = color;
-        octx.fill(new Path2D(d));
-      };
-      ctx.setTransform(1, 0, 0, 1, 0, 0);
-      ctx.clearRect(0, 0, cv.width, cv.height);
-      RIBBONS.forEach((r, i) => {
-        const g = ribbonPaths(r, tau, amp);
-        octx.setTransform(1, 0, 0, 1, 0, 0);
-        octx.clearRect(0, 0, off.width, off.height);
-        octx.save();
-        octx.setTransform(s, 0, 0, s, ox, oy);
-        octx.clip(new Path2D(g.clip));
-        blurred(g.deep, mix(COLD[i][0], HOT[i][0], f), 50);
-        blurred(g.bright, mix(COLD[i][1], HOT[i][1], f), 30);
-        octx.restore();
-        ctx.globalAlpha = Math.min(1, r.op * CONFIG.glow * 2);
-        ctx.drawImage(off, 0, 0);
-      });
-      ctx.globalAlpha = 1;
+      const f = isSecond(state.stage) ? ease((sec - state.saveAt) / CONFIG.recolorTime) : 0;
+      const mode = isLight(state.stage) ? 'light' : 'water';
+      el.phone.style.background = mix(BGCOL[mode][0], BGCOL[mode][1], f);
+      BG.draw(el.bgSoft, el.bgSharp, { mode, t: tau, amp, f, sec, glow: CONFIG.glow, speed: RAY.speed, glints });
+      while (glints.length && sec - glints[0].t0 > 1) glints.shift();
     }
     if (!showInput) el.phone.style.background = '#141414';
 
@@ -328,7 +273,6 @@
       ps.transform = 'scale(' + Math.max(0.3, k) + ')';
       ps.height = '';
       vars.forEach((v) => ps.removeProperty(v));
-      sizeRibbons(874);
       return;
     }
     const k = window.innerWidth / 402;
@@ -341,7 +285,6 @@
     const readTop = (top + 56 + kbTop) / 2 - 80;
     ps.transform = 'scale(' + k + ')';
     ps.height = h + 'px';
-    sizeRibbons(h);
     ps.setProperty('--nav-top', top + 'px');
     ps.setProperty('--read-top', readTop + 'px');
     ps.setProperty('--quiet-top', readTop - 67 + 'px');

@@ -18,13 +18,11 @@
 
     <!-- Фон экрана ввода: ленты света под матовым стеклом -->
     <div class="input-bg" id="inputBg" aria-hidden="true">
-      <canvas class="ribbons" id="ribbons"></canvas>
+      <canvas class="bg-soft" id="bgSoft" width="50" height="109"></canvas>
+      <canvas class="bg-sharp" id="bgSharp" width="101" height="219"></canvas>
       <div class="frost"></div>
       <div class="quiet"></div>
-      <svg class="grain" width="402" height="874">
-        <filter id="grainF"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter>
-        <rect width="100%" height="100%" filter="url(#grainF)"/>
-      </svg>
+      <div class="grain"></div>
       <div class="cover" id="cover"></div>
     </div>
 
@@ -76,19 +74,19 @@
         <div class="group">
           <h2>Электричество</h2>
           <div class="card">
-            <div class="row">
+            <button class="row" type="button" id="rowDay">
               <span class="ico"><svg width="20" height="20" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.4" fill="#f5f5f5"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.5 1.5M17.2 17.2l1.5 1.5M5.3 18.7l1.5-1.5M17.2 6.8l1.5-1.5" stroke="#f5f5f5" stroke-width="1.8" stroke-linecap="round"/></svg></span>
               <span class="label">День</span>
               <span class="value" id="valDay"></span>
               <span class="chev"><svg width="10" height="24" viewBox="-2 -6 10 24" fill="none"><path d="M0.530273 0.530273L6.53027 6.53027L0.530273 12.5303" stroke-width="1.5" stroke-linejoin="round" stroke="#999999"/></svg></span>
-            </div>
+            </button>
             <div class="divider"></div>
-            <div class="row">
+            <button class="row" type="button" id="rowNight">
               <span class="ico"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M9.56041 2.18088C10.1592 2.14588 10.4587 2.89259 10.0016 3.28105C8.94201 4.1816 8.32031 5.4966 8.32031 6.91412C8.32031 9.54609 10.454 11.6797 13.0859 11.6797C14.5035 11.6797 15.8185 11.058 16.719 9.99841C17.1071 9.54183 17.8531 9.84017 17.8193 10.4385C17.5859 14.5669 14.1629 17.8126 10.0098 17.8126C5.68965 17.8126 2.1875 14.3104 2.1875 9.99029C2.1875 5.86158 5.39623 2.45076 9.49605 2.18465L9.50008 2.18439L9.56041 2.18088Z" fill-rule="evenodd" clip-rule="evenodd" fill="#F5F5F5"/></svg></span>
               <span class="label">Ночь</span>
               <span class="value" id="valNight"></span>
               <span class="chev"><svg width="10" height="24" viewBox="-2 -6 10 24" fill="none"><path d="M0.530273 0.530273L6.53027 6.53027L0.530273 12.5303" stroke-width="1.5" stroke-linejoin="round" stroke="#999999"/></svg></span>
-            </div>
+            </button>
           </div>
         </div>
       </div>
@@ -104,7 +102,7 @@
         </button>
         <div class="nav-title">
           <span id="inTitle">Холодная вода</span>
-          <span class="meter-no">№ <span id="numA">1015019434</span><b id="numB">800</b></span>
+          <span class="meter-no"><span id="numPre">№ </span><span id="numA">1015019434</span><b id="numB">800</b></span>
         </div>
         <button class="glass-btn right" type="button" aria-label="Включить фонарик">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M17.1947 3.20741C16.2182 3.10432 14.6391 3 12.25 3C9.86091 3 8.28223 3.10432 7.30532 3.20741C6.21591 3.32318 5.5 4.24814 5.5 5.27618V6.15777C9.64409 5.493 14.8559 5.493 19 6.15777V5.27618C19 4.24814 18.2841 3.32277 17.1947 3.20741ZM19 7.63009V7.401C14.8919 6.71455 9.60809 6.71455 5.5 7.401V7.63009C5.5 8.17255 5.64032 8.72605 5.95409 9.20468C5.96757 9.22439 5.9819 9.2435 5.99705 9.26195L8.00282 11.6584C8.14027 14.6497 8.36527 17.7874 8.48636 19.382C8.55386 20.2714 9.16545 21.09 10.1309 21.2463C10.6709 21.3334 11.3876 21.4091 12.25 21.4091C13.1124 21.4091 13.8291 21.3334 14.3691 21.2463C15.3345 21.09 15.9461 20.2714 16.0136 19.3825C16.1347 17.787 16.3597 14.6497 16.4972 11.6588L18.503 9.26195C18.5181 9.2435 18.5324 9.22439 18.5459 9.20468C18.8597 8.72605 19 8.17255 19 7.63009ZM11.4318 13.8409C11.4318 13.6239 11.518 13.4158 11.6715 13.2624C11.8249 13.1089 12.033 13.0227 12.25 13.0227C12.467 13.0227 12.6751 13.1089 12.8285 13.2624C12.982 13.4158 13.0682 13.6239 13.0682 13.8409V15.4773C13.0682 15.6943 12.982 15.9024 12.8285 16.0558C12.6751 16.2093 12.467 16.2955 12.25 16.2955C12.033 16.2955 11.8249 16.2093 11.6715 16.0558C11.518 15.9024 11.4318 15.6943 11.4318 15.4773V13.8409Z" fill-rule="evenodd" clip-rule="evenodd" fill="#F5F5F5"/></svg>
@@ -116,7 +114,7 @@
         <div class="reading-value">
           <span class="num" id="shown">0</span>
           <span class="caret" id="caret" aria-hidden="true"></span>
-          <span class="unit">м³</span>
+          <span class="unit" id="unit">м³</span>
         </div>
         <span class="support" id="support" aria-live="polite"></span>
       </div>
@@ -128,6 +126,7 @@
 
   </div>
 </main>
+<script src="bg.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

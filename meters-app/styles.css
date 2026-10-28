@@ -54,19 +54,18 @@ button { font: inherit; color: inherit; }
 
 /* ---------- Фон экрана ввода ---------- */
 .input-bg { position: absolute; inset: 0; display: none; }
-.ribbons, .grain { position: absolute; left: 0; top: 0; }
-.ribbons { width: 100%; height: 100%; }
-.frost {
-  position: absolute; inset: 0;
-  background: rgba(255, 255, 255, 0.015);
-  backdrop-filter: blur(28px);
-  -webkit-backdrop-filter: blur(28px);
-}
+/* Фон рисуется на маленьких canvas и растягивается — размытие почти бесплатное.
+   backdrop-filter не используется: на телефоне он тормозит поверх анимации. */
+.bg-soft, .bg-sharp { position: absolute; left: 0; top: 0; width: 402px; height: 874px; }
+.bg-soft { filter: blur(22px); transform: translateZ(0); }
+.bg-sharp { filter: blur(7px); transform: translateZ(0); }
+.input-bg.light .bg-soft { filter: blur(16px); }
+.frost { position: absolute; inset: 0; background: rgba(255, 255, 255, 0.015); }
 .quiet {
   position: absolute; left: -64px; top: var(--quiet-top, 160px); width: 530px; height: 380px;
   background: radial-gradient(closest-side, rgba(20, 20, 20, 0.7), rgba(20, 20, 20, 0));
 }
-.grain { opacity: 0.34; mix-blend-mode: overlay; }
+.grain { position: absolute; inset: 0; background: url('grain.png') repeat; background-size: 96px 96px; opacity: 0.12; mix-blend-mode: overlay; }
 .cover { position: absolute; inset: 0; background: var(--bg); opacity: 0; }
 
 /* ---------- Статус-бар ---------- */
@@ -102,7 +101,7 @@ button { font: inherit; color: inherit; }
   position: absolute; top: 8px; width: 40px; height: 40px; padding: 0;
   border: none; background: transparent; display: flex; align-items: center; justify-content: center;
 }
-.icon-btn.left { left: 4px; } /* иконка 24 в кнопке 40 → 12px от края */
+.icon-btn.left { left: 12px; }
 .icon-btn.right { right: 12px; }
 
 .list-head { position: absolute; left: 0; top: calc(var(--nav-top, 62px) + 60px); width: 402px; padding: 0 16px; display: flex; flex-direction: column; gap: 2px; }
@@ -120,7 +119,10 @@ button { font: inherit; color: inherit; }
   display: flex; align-items: center; gap: 8px;
 }
 .card { padding: 16px; display: flex; flex-direction: column; gap: 16px; }
-.row { display: flex; align-items: center; gap: 8px; }
+.row {
+  display: flex; align-items: center; gap: 8px;
+  width: 100%; padding: 0; border: none; background: none; text-align: left; cursor: pointer;
+}
 .divider { height: 1px; background: var(--cell); }
 .ico { padding: 2px; display: flex; }
 .label { flex: 1 0 0; font-size: 16px; line-height: 24px; font-weight: 400; }
@@ -174,6 +176,11 @@ button { font: inherit; color: inherit; }
 }
 .key:active { background: rgba(255, 255, 255, 0.14); }
 
+.home-indicator {
+  position: absolute; left: 134px; bottom: 8px; width: 134px; height: 5px;
+  border-radius: 3px; background: var(--text); z-index: 5;
+}
+
 /* ---------- На телефоне: как настоящее приложение ----------
    Рамки нет, экран во всю ширину, вместо нарисованного статус-бара — настоящий.
    Высоту и позиции считает fit() в app.js. */
@@ -182,7 +189,8 @@ button { font: inherit; color: inherit; }
 .app .stage { display: block; min-height: 0; height: 100%; }
 .app .phone { position: absolute; left: 0; top: 0; border-radius: 0; box-shadow: none; transform-origin: 0 0; }
 .app .statusbar { display: none; }
-.app .grain { width: 100%; height: 100%; }
+/* Фон 402×874 по центру экрана; на очень высоком экране чуть растягивается */
+.app .bg-soft, .app .bg-sharp { top: 50%; height: max(874px, 100%); margin-top: calc(max(874px, 100%) / -2); }
 .app button { touch-action: manipulation; }
 
 :focus-visible { outline: 2px solid rgba(245, 245, 245, 0.7); outline-offset: 2px; }
